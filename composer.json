@@ -1,6 +1,6 @@
 {
     "name": "travis/airbnb",
-    "description": "A PHP library for working w/ the AirBNB API.",
+    "description": "A PHP library for working w/ the Airbnb API.",
     "license": "MIT",
     "repositories": [
         {

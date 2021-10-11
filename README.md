@@ -1,6 +1,6 @@
 # AirBNB
 
-A PHP library for working w/ the AirBNB API.
+A PHP library for working w/ the Airbnb API.
 
 ## Install
 
@@ -8,19 +8,22 @@ Normal install via Composer.
 
 ## Usage
 
+This uses the "unofficial" API to search listings on Airbnb.  To find your API key, go to [airbnb.com](https://www.airbnb.com), open developer tools, click network, and search for ``key``.
+
 ```php
-use Travis\AirBNB;
+use Travis\Airbnb;
 
-// get geo info on an address
-$lookup = ArcGIS::geocode('777 Pearly Gates, Austin, TX');
-$longitude = ex($lookup, 'candidates.0.location.x');
-$latitude = ex($lookup, 'candidates.0.location.y');
-
-// use a hosted ArcGIS resource to query additional data for those XY coords
-$endpoint = 'https://maps.cityoffbg.com/arcgis/rest/services/LandUse/Zoning/MapServer/1/'; //ending slash is important
-$lookup = ArcGIS::query($endpoint, $longitude, $latitude);
-
-// The data returned depends on what fields are available by the resource being queried.
+$apikey = 'YOURAPIKEY';
+$listings = Airbnb::search($apikey, 'Austin, TX'); // returns array
 ```
 
-See the [API Guide](https://stevesie.com/apps/airbnb-api/listings) for additional methods.
+Available documentation is unfortunable very limited, and I found the most useful tips searching various [Python](https://github.com/nderkach/airbnb-python/tree/master/airbnb) libraries on Github to see how they worked.
+
+## Issues
+
+Currently caps out at 300 homes.  Would require a polygon workaround to split up a region to search smaller parts before combinging them together.
+
+## References
+
+- [Python Script](https://github.com/nderkach/airbnb-python/tree/master/airbnb)
+- [Apify Script](https://github.com/dtrungtin/actor-airbnb-scraper)
