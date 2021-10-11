@@ -1,4 +1,4 @@
-# AirBNB
+# Airbnb
 
 A PHP library for working w/ the Airbnb API.
 
