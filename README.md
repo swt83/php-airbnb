@@ -17,7 +17,7 @@ $apikey = 'YOURAPIKEY';
 $listings = Airbnb::search($apikey, 'Austin, TX'); // returns array
 ```
 
-Available documentation is unfortunable very limited, and I found the most useful tips searching various [Python](https://github.com/nderkach/airbnb-python/tree/master/airbnb) libraries on Github to see how they worked.
+Available documentation is unfortunately very limited, and I found the most useful tips searching various [Python](https://github.com/nderkach/airbnb-python/tree/master/airbnb) libraries on Github to see how they worked.
 
 ## Issues
 
