@@ -18,7 +18,7 @@
     ],
     "require": {
         "travis/ex": "1.0.*",
-        "travis/nominatim": "1.0.*",
+        "travis/nominatim": "dev-master",
         "travis/cli": "1.0.*"
     },
     "autoload": {
