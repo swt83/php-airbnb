@@ -2,9 +2,60 @@
 
 namespace Travis;
 
+use Travis\CLI;
+use Travis\Nominatum;
+
 class Airbnb
 {
     public static function search($apikey, $location)
+    {
+        // init
+        $homes = [];
+
+        // get grids
+        CLI::write('Generating grid of "'.$location.'"...');
+        $grids = static::grids($location);
+        $total = sizeof($grids);
+        CLI::write($total.' grids found...');
+
+        // foreach grid...
+        foreach ($grids as $num => $grid)
+        {
+            CLI::progress($num, $total);
+
+            // query for homes
+            $results = static::query($apikey, $grid);
+
+            // merge
+            $homes = array_merge($homes, $results);
+        }
+        CLI::progress_complete();
+
+        // dedupe
+        $history = [];
+        $dupes = [];
+        foreach ($homes as $key => $home)
+        {
+            $list_id = ex($home, 'listing.id');
+
+            if (isset($history[$list_id]))
+            {
+                $dupes[$list_id] = 1;
+                unset($homes['key']);
+            }
+
+            $history[$list_id] = 1;
+        }
+
+        // report
+        CLI::write(number_format(sizeof($dupes)).' dupes found.');
+        CLI::write(number_format(sizeof($homes)).' homes found.');
+
+        // return
+        return $homes;
+    }
+
+    protected static function query($apikey, $grid)
     {
         // init
         $homes = [];
@@ -19,11 +70,12 @@ class Airbnb
         {
             $results = static::request('https://www.airbnb.com/api/v2/explore_tabs/', [
                 'key' => $apikey,
-                'location' => $location,
-                #'limit' => 50,
-                #'toddlers' => '0',
-                #'adults' => '0',
-                #'infants' => '0',
+                #'location' => $location,
+                'search_by_map' => 'true',
+                'ne_lat' => ex($grid, 'ne_lat'),
+                'ne_lng' => ex($grid, 'ne_lon'),
+                'sw_lat' => ex($grid, 'sw_lat'),
+                'sw_lng' => ex($grid, 'sw_lon'),
                 'is_guided_search' => 'true',
                 'version' => '1.4.8',
                 'section_offset' => 0,
@@ -34,8 +86,11 @@ class Airbnb
                 '_format' => 'for_explore_search_native',
                 'metadata_only' => 'false',
                 'refinement_paths[]' => '/homes',
-                #'timezone' => 'Europe/Lisbon',
                 'satori_version' => '1.1.0'
+                #'timezone' => 'Europe/Lisbon',
+                #'toddlers' => '0',
+                #'adults' => '0',
+                #'infants' => '0',
             ]);
 
             // track pages
@@ -43,16 +98,33 @@ class Airbnb
             $page++;
 
             // get listings
-            $listings = ex($results, 'explore_tabs.0.sections.0.listings');
-            if (!$listings) $listings = ex($results, 'explore_tabs.0.sections.1.listings');
-            if (!$listings) throw new \Exception('Unable to find listings.');
+            $listings = [];
+            foreach (ex($results, 'explore_tabs.0.sections') as $section)
+            {
+                $listings = array_merge($listings, ex($section, 'listings', []));
+            }
 
             // add to homes
             $homes = array_merge($homes, $listings);
         }
 
+        // check for overload
+        if (sizeof($homes) >= 300)
+        {
+            throw new \Exception('More than 300 homes in grid!');
+        }
+
         // return
         return $homes;
+    }
+
+    protected static function grids($location, $radius = 1)
+    {
+        // get bounding box of city
+        $city = Nominatum::to_coords($location);
+
+        // get grid of bboxes
+        return Nominatum::calc_point_grid(ex($city, '0.boundingbox.1'), ex($city, '0.boundingbox.3'), ex($city, '0.boundingbox.0'), ex($city, '0.boundingbox.2'), 'km', $radius);
     }
 
     protected static function request($endpoint, $arguments, $timeout = 30)

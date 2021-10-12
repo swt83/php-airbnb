@@ -6,10 +6,20 @@
         {
             "type": "vcs",
             "url": "git@github.com:swt83/php-ex.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:swt83/php-nominatim.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:swt83/php-cli.git"
         }
     ],
     "require": {
-        "travis/ex": "1.0.*"
+        "travis/ex": "1.0.*",
+        "travis/nominatim": "1.0.*",
+        "travis/cli": "1.0.*"
     },
     "autoload": {
         "psr-4": {
