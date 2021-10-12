@@ -41,7 +41,7 @@ class Airbnb
             if (isset($history[$list_id]))
             {
                 $dupes[$list_id] = 1;
-                unset($homes['key']);
+                unset($homes[$key]);
             }
 
             $history[$list_id] = 1;
