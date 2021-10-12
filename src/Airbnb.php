@@ -3,7 +3,7 @@
 namespace Travis;
 
 use Travis\CLI;
-use Travis\Nominatum;
+use Travis\Nominatim;
 
 class Airbnb
 {
@@ -121,10 +121,10 @@ class Airbnb
     protected static function grids($location, $radius = 1)
     {
         // get bounding box of city
-        $city = Nominatum::to_coords($location);
+        $city = Nominatim::to_coords($location);
 
         // get grid of bboxes
-        return Nominatum::calc_point_grid(ex($city, '0.boundingbox.1'), ex($city, '0.boundingbox.3'), ex($city, '0.boundingbox.0'), ex($city, '0.boundingbox.2'), 'km', $radius);
+        return Nominatim::calc_point_grid(ex($city, '0.boundingbox.1'), ex($city, '0.boundingbox.3'), ex($city, '0.boundingbox.0'), ex($city, '0.boundingbox.2'), 'km', $radius);
     }
 
     protected static function request($endpoint, $arguments, $timeout = 30)
